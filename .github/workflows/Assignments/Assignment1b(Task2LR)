@@ -1,0 +1,76 @@
+import torch
+import torch.optim as optim
+import torch.nn as nn
+import matplotlib.pyplot as plt
+from sklearn.metrics import precision_recall_curve
+
+class LogisticRegressionModel(torch.nn.Module):
+    def __init__(self, input_dim):
+        super(LogisticRegressionModel, self).__init__()
+    
+        self.linear = torch.nn.Linear(input_dim, 1)
+    
+    def forward(self, x):
+        
+        return torch.sigmoid(self.linear(x))
+
+
+def train_model(model, X_train, y_train, num_epochs=100, learning_rate=0.01):
+    
+    criterion = nn.BCELoss()
+    optimizer = optim.SGD(model.parameters(), lr=learning_rate)
+    
+    loss_list = []  
+
+    
+    for epoch in range(num_epochs):
+        
+        y_pred = model(X_train)
+        
+        
+        loss = criterion(y_pred.squeeze(), y_train)
+        loss_list.append(loss.item())
+        
+        
+        optimizer.zero_grad()
+        
+        
+        loss.backward()
+        
+        
+        optimizer.step()
+        
+        
+        if (epoch+1) % 10 == 0:
+            print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}')
+    
+    
+    plt.plot(loss_list)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Loss Curve')
+    plt.show()
+
+
+def plot_precision_recall(model, X_test, y_test):
+    
+    y_probs = model(X_test).detach().numpy().squeeze()
+
+   
+    precision, recall, thresholds = precision_recall_curve(y_test, y_probs)
+
+    plt.plot(recall, precision, marker='.')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Precision-Recall Curve')
+    plt.show()
+
+    return precision, recall, thresholds
+
+input_dim = X_train.shape[1]
+
+model = LogisticRegressionModel(input_dim)
+
+train_model(model, X_train, y_train, num_epochs=100, learning_rate=0.01)
+
+plot_precision_recall(model, X_test, y_test)

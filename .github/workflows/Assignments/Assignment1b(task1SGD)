@@ -1,0 +1,84 @@
+import torch
+import torch.linalg as linalg
+import matplotlib.pyplot as plt
+
+
+torch.manual_seed(42)  
+
+
+n_samples = 100
+
+
+X = torch.rand(n_samples, 1) * 10
+
+
+true_w = 2.5
+true_b = 7.0
+
+y = true_w * X + true_b + torch.randn(n_samples, 1) * 0.5
+
+
+w = torch.randn(1, requires_grad=True)  
+b = torch.randn(1, requires_grad=True)  
+
+
+learning_rate = 0.01
+lambda_reg = 0.01  
+num_epochs = 1000
+
+
+def model(X):
+    return w * X + b
+
+
+def regularized_loss(y_pred, y_true, w, lambda_reg):
+    mse_loss = torch.mean((y_pred - y_true) ** 2)
+    reg_term = lambda_reg * torch.sum(w ** 2) 
+    return mse_loss + reg_term
+
+
+def stochastic_gradient_descent(X, y, w, b, learning_rate, lambda_reg, num_epochs):
+    loss_history = []
+    
+    for epoch in range(num_epochs):
+        
+        y_pred = model(X)
+        
+        
+        loss = regularized_loss(y_pred, y, w, lambda_reg)
+        loss_history.append(loss.item())
+        
+        
+        loss.backward()
+
+        
+        with torch.no_grad():
+            w -= learning_rate * w.grad
+            b -= learning_rate * b.grad
+
+        
+        w.grad.zero_()
+        b.grad.zero_()
+
+        
+        if epoch % 100 == 0:
+            print(f"Epoch {epoch}: Loss = {loss.item()}")
+
+    return loss_history
+
+
+loss_history = stochastic_gradient_descent(X, y, w, b, learning_rate, lambda_reg, num_epochs)
+
+
+plt.plot(range(num_epochs), loss_history)
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Loss vs Epochs')
+plt.show()
+plt.scatter(X.numpy(), y.numpy(), label='Data')
+plt.plot(X.numpy(), (w * X + b).detach().numpy(), color='red', label='Fitted line')
+plt.xlabel('X')
+plt.ylabel('y')
+plt.legend()
+plt.title('Fitted Linear Model')
+plt.show()

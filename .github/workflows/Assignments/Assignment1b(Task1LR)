@@ -1,0 +1,19 @@
+import pandas as pd
+
+data = pd.read_csv('train.csv')  
+print(data.head())
+print(data.isnull().sum())
+print(data.info())
+data = data.drop(['id'], axis=1)
+data = data.dropna()  
+data = pd.get_dummies(data, columns=['hour', 'banner_pos', 'device_type', 'device_conn_type'])
+from sklearn.preprocessing import LabelEncoder
+
+label_encoders = {}
+for column in ['device_ip', 'device_id']:
+    label_encoders[column] = LabelEncoder()
+    data[column] = label_encoders[column].fit_transform(data[column])
+X = data.drop('click', axis=1)
+y = data['click']
+X_tensor = torch.tensor(X.values, dtype=torch.float32)
+y_tensor = torch.tensor(y.values, dtype=torch.float32)
