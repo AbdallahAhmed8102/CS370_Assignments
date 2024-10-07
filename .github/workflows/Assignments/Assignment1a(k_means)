@@ -1,0 +1,31 @@
+import torch
+
+def kmeans(X, k, max_iters=100):
+    # Randomly initialize centroids
+    indices = torch.randint(0, X.size(0), (k,))
+    centroids = X[indices]
+    
+    for i in range(max_iters):
+        # Assign each point to the nearest centroid
+        distances = torch.cdist(X, centroids)
+        cluster_assignments = distances.argmin(dim=1)
+        
+        # Update centroids
+        new_centroids = torch.stack([X[cluster_assignments == j].mean(dim=0) for j in range(k)])
+        
+        # Stop if centroids don't change
+        if torch.allclose(centroids, new_centroids):
+            break
+        
+        centroids = new_centroids
+    
+    return centroids, cluster_assignments
+
+# Perform K-means clustering on the dataset
+k = 2  # number of clusters
+centroids, assignments = kmeans(X, k)
+
+# Plot the clustered data
+plt.scatter(X[:, 0], X[:, 1], c=assignments, cmap='viridis', alpha=0.5)
+plt.scatter(centroids[:, 0], centroids[:, 1], color='red', marker='x')
+plt.show()

@@ -1,0 +1,25 @@
+import torch
+import matplotlib.pyplot as plt
+
+# Covariance matrices and means
+cov_A = torch.tensor([[1, 0.25], [0.25, 1]], dtype=torch.float32)
+cov_B = torch.tensor([[1, 0.25], [0.25, 1]], dtype=torch.float32)
+
+mean_A = torch.tensor([-0.5, -0.5], dtype=torch.float32)
+mean_B = torch.tensor([0.5, 0.5], dtype=torch.float32)
+
+# Generate samples using multivariate normal distribution
+dist_A = torch.distributions.MultivariateNormal(mean_A, cov_A)
+dist_B = torch.distributions.MultivariateNormal(mean_B, cov_B)
+
+samples_A = dist_A.sample((1000,))
+samples_B = dist_B.sample((1000,))
+
+# Plot the two distributions
+plt.scatter(samples_A[:, 0], samples_A[:, 1], label='Distribution A', alpha=0.5)
+plt.scatter(samples_B[:, 0], samples_B[:, 1], label='Distribution B', alpha=0.5)
+plt.legend()
+plt.show()
+
+# Stack both distributions into a single tensor
+X = torch.cat((samples_A, samples_B), dim=0)
