@@ -1,0 +1,33 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import torch
+
+# Define means and covariance matrices for distributions A and B
+mean_A = [-0.5, -0.5]
+cov_A = [[1, 0.25], [0.25, 1]]
+
+mean_B = [0.5, 0.5]
+cov_B = [[1, 0.25], [0.25, 1]]
+
+# Generate m = 1000 samples from each Bivariate Normal distribution
+m = 1000
+samples_A = np.random.multivariate_normal(mean_A, cov_A, m)
+samples_B = np.random.multivariate_normal(mean_B, cov_B, m)
+
+# Plot the samples from both distributions
+plt.figure(figsize=(8, 6))
+plt.scatter(samples_A[:, 0], samples_A[:, 1], label='Distribution A', alpha=0.6)
+plt.scatter(samples_B[:, 0], samples_B[:, 1], label='Distribution B', alpha=0.6)
+plt.title('Samples from Bivariate Normal Distributions A and B')
+plt.xlabel('X1')
+plt.ylabel('X2')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Stack the samples into a single tensor X
+samples_A_tensor = torch.tensor(samples_A, dtype=torch.float32)
+samples_B_tensor = torch.tensor(samples_B, dtype=torch.float32)
+X = torch.vstack((samples_A_tensor, samples_B_tensor))
+
+X.shape, X[:5]  # Display the shape of X and the first 5 rows
