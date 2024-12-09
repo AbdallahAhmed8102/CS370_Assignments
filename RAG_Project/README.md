@@ -31,4 +31,4 @@ Querying_Qdrant.py
 Integrating_Language_Gen_Model.py
 clearml_Integration.py
 Docker ps Screenshot:
-
+https://cdn.discordapp.com/attachments/1314380084668268657/1315497093703663616/image.png?ex=67579fa3&is=67564e23&hm=5cd33c6a77330fb61af041747dd13f1980cba3aa1350b2e9aa424314949fc09c&
